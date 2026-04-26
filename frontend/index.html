@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TriIntel — Career Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ── TOKENS ────────────────────────────────────────────────────── */
+:root {
+  --bg:       #080b14;
+  --bg2:      #0d1220;
+  --bg3:      #121929;
+  --card:     #0f1623;
+  --border:   #1c2540;
+  --border2:  #243058;
+  --accent:   #4f8ef7;
+  --accent2:  #7eb3ff;
+  --violet:   #7c5cfc;
+  --cyan:     #00d4c8;
+  --green:    #17d978;
+  --red:      #ff4d6a;
+  --amber:    #ffb340;
+  --text:     #dce6f5;
+  --muted:    #6b7fa3;
+  --white:    #ffffff;
+  --r:        14px;
+  --r2:       8px;
+  --font-head:'Syne', sans-serif;
+  --font-body:'DM Sans', sans-serif;
+  --glow:     0 0 40px rgba(79,142,247,.12);
+  --glow2:    0 0 60px rgba(124,92,252,.15);
+}
+
+/* ── RESET ─────────────────────────────────────────────────────── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.6;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* background grid texture */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(79,142,247,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,142,247,.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events:none;
+  z-index:0;
+}
+
+a { color:var(--accent2); text-decoration:none; }
+a:hover { text-decoration:underline; }
+button { font-family:var(--font-body); }
+
+/* ── SCROLLBAR ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--bg2); }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:99px; }
+
+/* ── NAV ───────────────────────────────────────────────────────── */
+nav {
+  position:sticky; top:0; z-index:200;
+  background:rgba(8,11,20,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;
+  display:flex; align-items:center; justify-content:space-between;
+  height:60px;
+}
+.logo {
+  display:flex; align-items:center; gap:10px;
+  font-family:var(--font-head);
+  font-size:1.25rem; font-weight:800;
+  color:var(--white); letter-spacing:-.5px;
+}
+.logo-mark {
+  width:32px; height:32px;
+  background:linear-gradient(135deg, var(--accent), var(--violet));
+  border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; box-shadow:0 4px 16px rgba(79,142,247,.4);
+}
+.nav-links { display:flex; gap:2px; }
+.nav-btn {
+  background:none; border:none;
+  color:var(--muted); cursor:pointer;
+  font-family:var(--font-body); font-size:.85rem; font-weight:500;
+  padding:7px 14px; border-radius:var(--r2);
+  transition:all .2s;
+}
+.nav-btn:hover { color:var(--text); background:var(--bg3); }
+.nav-btn.active { color:var(--white); background:var(--bg3); }
+
+/* ── PAGES ─────────────────────────────────────────────────────── */
+.page { display:none; }
+.page.active { display:block; animation:fadeUp .35s ease; }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.page-inner { max-width:1180px; margin:0 auto; padding:2.5rem 1.5rem; position:relative; z-index:1; }
+
+/* ── HERO ──────────────────────────────────────────────────────── */
+.hero {
+  position:relative; overflow:hidden;
+  background:linear-gradient(135deg, #0d1220 0%, #101828 50%, #0a1020 100%);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:5rem 3rem;
+  text-align:center;
+  margin-bottom:2.5rem;
+}
+.hero::before {
+  content:'';
+  position:absolute; top:-60px; left:50%; transform:translateX(-50%);
+  width:500px; height:300px;
+  background:radial-gradient(ellipse, rgba(79,142,247,.18) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hero::after {
+  content:'';
+  position:absolute; bottom:-40px; right:-40px;
+  width:300px; height:300px;
+  background:radial-gradient(ellipse, rgba(124,92,252,.12) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(79,142,247,.1); border:1px solid rgba(79,142,247,.25);
+  border-radius:99px; padding:5px 16px;
+  font-size:.78rem; font-weight:600; color:var(--accent2);
+  letter-spacing:.05em; text-transform:uppercase;
+  margin-bottom:1.5rem;
+}
+.hero h1 {
+  font-family:var(--font-head);
+  font-size:clamp(2.2rem, 5vw, 3.8rem);
+  font-weight:800; line-height:1.1;
+  color:var(--white); margin-bottom:1.2rem;
+  letter-spacing:-1.5px;
+}
+.hero h1 span {
+  background:linear-gradient(90deg, var(--accent), var(--cyan));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.hero p { color:var(--muted); font-size:1.05rem; max-width:560px; margin:0 auto 2.5rem; }
+.hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+/* ── BUTTONS ───────────────────────────────────────────────────── */
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:11px 24px; border-radius:var(--r2);
+  border:none; cursor:pointer;
+  font-family:var(--font-body); font-size:.88rem; font-weight:600;
+  transition:all .2s; white-space:nowrap;
+}
+.btn-primary {
+  background:linear-gradient(135deg, var(--accent), #3a6fd8);
+  color:#fff; box-shadow:0 4px 20px rgba(79,142,247,.35);
+}
+.btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(79,142,247,.5); }
+.btn-outline {
+  background:transparent; color:var(--text);
+  border:1px solid var(--border2);
+}
+.btn-outline:hover { background:var(--bg3); border-color:var(--accent); color:var(--white); }
+.btn-violet {
+  background:linear-gradient(135deg, var(--violet), #5a3dcc);
+  color:#fff; box-shadow:0 4px 20px rgba(124,92,252,.35);
+}
+.btn-violet:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(124,92,252,.5); }
+.btn-sm { padding:7px 16px; font-size:.8rem; }
+.btn-xs { padding:5px 12px; font-size:.75rem; }
+
+/* ── STAT CARDS ────────────────────────────────────────────────── */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2rem; }
+.stat-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r); padding:1.4rem;
+  text-align:center; position:relative; overflow:hidden;
+  transition:border-color .2s;
+}
+.stat-card:hover { border-color:var(--border2); }
+.stat-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--accent), var(--violet));
+}
+.stat-val {
+  font-family:var(--font-head); font-size:2rem; font-weight:800;
+  color:var(--white); letter-spacing:-1px;
+}
+.stat-lbl { font-size:.78rem; color:var(--muted); margin-top:4px; font-weight:500; }
+
+/* ── SECTION HEADER ────────────────────────────────────────────── */
+.sec-header { margin-bottom:1.5rem; }
+.sec-title {
+  font-family:var(--font-head); font-size:1.2rem; font-weight:700;
+  color:var(--white); display:flex; align-items:center; gap:10px;
+}
+.sec-sub { font-size:.83rem; color:var(--muted); margin-top:4px; }
+
+/* ── GRID ──────────────────────────────────────────────────────── */
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+.g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+.g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+@media(max-width:900px) { .g2,.g3,.g4 { grid-template-columns:1fr 1fr; } }
+@media(max-width:580px) { .g2,.g3,.g4,.stats-row { grid-template-columns:1fr; } }
+
+/* ── CARD ──────────────────────────────────────────────────────── */
+.card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r); padding:1.4rem;
+}
+.card-title {
+  font-family:var(--font-head); font-size:.95rem; font-weight:700;
+  color:var(--white); margin-bottom:1rem;
+  display:flex; align-items:center; justify-content:space-between;
+}
+
+/* ── ROLE CARD ─────────────────────────────────────────────────── */
+.role-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r); padding:1.1rem;
+  cursor:pointer; transition:all .25s;
+  position:relative; overflow:hidden;
+}
+.role-card:hover {
+  border-color:var(--accent); transform:translateY(-3px);
+  box-shadow:0 12px 32px rgba(79,142,247,.15);
+}
+.role-card.emerging { border-color:rgba(124,92,252,.4); }
+.role-card.emerging:hover { border-color:var(--violet); box-shadow:0 12px 32px rgba(124,92,252,.2); }
+.role-card.atrisk { border-color:rgba(255,77,106,.2); }
+.role-card h3 {
+  font-family:var(--font-head); font-size:.92rem; font-weight:700;
+  color:var(--white); margin:8px 0 6px;
+}
+.role-meta { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:8px; }
+.demand-row {
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:.75rem; color:var(--muted); margin-bottom:4px;
+}
+.progress { background:var(--bg3); border-radius:99px; height:5px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:99px; transition:width .6s ease; }
+.role-footer {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:10px; font-size:.78rem;
+}
+.salary-tag { font-weight:700; color:var(--accent2); }
+
+/* ── BADGES ────────────────────────────────────────────────────── */
+.badge {
+  display:inline-flex; align-items:center;
+  padding:2px 9px; border-radius:99px;
+  font-size:.72rem; font-weight:600;
+}
+.b-blue   { background:rgba(79,142,247,.15);  color:#7eb3ff; }
+.b-violet { background:rgba(124,92,252,.15);  color:#a78bfa; }
+.b-green  { background:rgba(23,217,120,.12);  color:#4ade80; }
+.b-red    { background:rgba(255,77,106,.12);  color:#f87171; }
+.b-amber  { background:rgba(255,179,64,.12);  color:#fbbf24; }
+.b-gray   { background:rgba(107,127,163,.12); color:var(--muted); }
+.b-cyan   { background:rgba(0,212,200,.1);    color:#67e8f9; }
+
+/* ── FORM ──────────────────────────────────────────────────────── */
+.form-group { margin-bottom:1.2rem; }
+.form-label {
+  display:block; font-size:.8rem; font-weight:600;
+  color:var(--muted); margin-bottom:6px; letter-spacing:.03em;
+  text-transform:uppercase;
+}
+input, select {
+  width:100%; background:var(--bg3);
+  border:1px solid var(--border); border-radius:var(--r2);
+  padding:10px 14px; color:var(--text);
+  font-family:var(--font-body); font-size:.88rem;
+  transition:all .2s; outline:none;
+}
+input:focus, select:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(79,142,247,.12);
+}
+select option { background:var(--bg2); }
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:500px) { .row2 { grid-template-columns:1fr; } }
+
+/* ── SKILL PICKER ──────────────────────────────────────────────── */
+.skill-wrap { position:relative; }
+.skill-drop {
+  position:absolute; top:calc(100% + 4px); left:0; right:0;
+  background:var(--bg2); border:1px solid var(--border2);
+  border-radius:var(--r2); max-height:200px; overflow-y:auto;
+  z-index:100; display:none;
+  box-shadow:0 16px 48px rgba(0,0,0,.5);
+}
+.skill-drop.open { display:block; }
+.sk-opt {
+  padding:9px 14px; cursor:pointer; font-size:.84rem;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid rgba(28,37,64,.5);
+  transition:background .15s;
+}
+.sk-opt:last-child { border-bottom:none; }
+.sk-opt:hover { background:var(--bg3); }
+.sk-opt.added { color:var(--muted); }
+.skill-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; min-height:32px; }
+.sk-tag {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--bg3); border:1px solid var(--border2);
+  border-radius:99px; padding:4px 10px 4px 12px;
+  font-size:.78rem; animation:popIn .2s ease;
+}
+@keyframes popIn {
+  from { transform:scale(.85); opacity:0; }
+  to   { transform:scale(1);   opacity:1; }
+}
+.sk-lv {
+  font-size:.68rem; padding:1px 7px; border-radius:99px; font-weight:700;
+}
+.lv-Beginner     { background:rgba(107,127,163,.2); color:var(--muted); }
+.lv-Intermediate { background:rgba(79,142,247,.2);  color:var(--accent2); }
+.lv-Advanced     { background:rgba(23,217,120,.15); color:#4ade80; }
+.sk-rm {
+  background:none; border:none; color:var(--muted); cursor:pointer;
+  font-size:14px; line-height:1; padding:0 2px;
+  transition:color .15s;
+}
+.sk-rm:hover { color:var(--red); }
+
+/* ── RESULTS ───────────────────────────────────────────────────── */
+.result-section {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--r); padding:1.4rem;
+  margin-bottom:1.2rem; animation:fadeUp .3s ease;
+}
+.rs-title {
+  font-family:var(--font-head); font-size:.95rem; font-weight:700;
+  color:var(--white); margin-bottom:1rem;
+  display:flex; align-items:center; gap:8px;
+}
+
+/* ── SCORE RING ────────────────────────────────────────────────── */
+.ring-wrap { position:relative; width:110px; height:110px; margin:0 auto 12px; }
+.ring-wrap svg { transform:rotate(-90deg); }
+.ring-text {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  text-align:center; line-height:1.2;
+}
+.ring-num {
+  font-family:var(--font-head); font-size:1.6rem;
+  font-weight:800; color:var(--white);
+}
+.ring-lbl { font-size:.65rem; color:var(--muted); }
+
+/* ── ROADMAP STEPS ─────────────────────────────────────────────── */
+.roadmap-step { display:flex; gap:14px; margin-bottom:1rem; align-items:flex-start; }
+.step-num {
+  min-width:30px; height:30px; border-radius:50%;
+  background:linear-gradient(135deg, var(--accent), var(--violet));
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size:.78rem; font-weight:800; flex-shrink:0; margin-top:2px;
+  box-shadow:0 4px 12px rgba(79,142,247,.3);
+}
+.step-num.high { background:linear-gradient(135deg, var(--red), #cc2244); box-shadow:0 4px 12px rgba(255,77,106,.3); }
+.step-num.med  { background:linear-gradient(135deg, var(--amber), #cc8800); }
+.step-body .sk-name { font-weight:600; color:var(--white); font-size:.88rem; }
+.step-body .sk-link { font-size:.77rem; color:var(--muted); margin-top:2px; }
+.step-body .sk-link a { color:var(--accent2); }
+
+/* ── ROLE RESULT ROW ───────────────────────────────────────────── */
+.rec-role-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 0; border-bottom:1px solid rgba(28,37,64,.7);
+  gap:1rem;
+}
+.rec-role-row:last-child { border-bottom:none; }
+.rrr-left .name { font-weight:700; color:var(--white); font-size:.92rem; }
+.rrr-left .meta { font-size:.75rem; color:var(--muted); margin-top:2px; }
+.match-pct {
+  font-family:var(--font-head); font-size:1.3rem; font-weight:800;
+  color:var(--accent2);
+}
+.match-lbl { font-size:.68rem; color:var(--muted); text-align:right; }
+
+/* ── SKILL BAR ─────────────────────────────────────────────────── */
+.skill-bar-row { margin-bottom:10px; }
+.sbr-head { display:flex; justify-content:space-between; font-size:.8rem; margin-bottom:4px; }
+.sbr-head .sn { color:var(--text); }
+.sbr-head .sc { color:var(--muted); }
+
+/* ── TABS ──────────────────────────────────────────────────────── */
+.tabs {
+  display:flex; gap:4px;
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--r2); padding:4px;
+  width:fit-content; margin-bottom:1.5rem;
+}
+.tab-btn {
+  padding:7px 18px; border:none; background:none;
+  color:var(--muted); cursor:pointer; border-radius:6px;
+  font-family:var(--font-body); font-size:.82rem; font-weight:600;
+  transition:all .2s;
+}
+.tab-btn.active { background:var(--accent); color:#fff; }
+
+/* ── TRENDING ROW ──────────────────────────────────────────────── */
+.tr-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 0; border-bottom:1px solid rgba(28,37,64,.6);
+  cursor:pointer; transition:background .15s; border-radius:6px;
+  padding-left:6px; padding-right:6px;
+}
+.tr-row:last-child { border-bottom:none; }
+.tr-row:hover { background:rgba(79,142,247,.05); }
+.tr-name { font-weight:600; font-size:.88rem; color:var(--white); }
+.tr-domain { font-size:.73rem; color:var(--muted); margin-top:2px; }
+.tr-score { font-family:var(--font-head); font-size:1rem; font-weight:800; color:var(--accent2); }
+.tr-growth { font-size:.72rem; margin-top:2px; text-align:right; }
+
+/* ── MODAL ─────────────────────────────────────────────────────── */
+.overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(4,6,14,.8); backdrop-filter:blur(8px);
+  z-index:500; align-items:center; justify-content:center;
+}
+.overlay.open { display:flex; }
+.modal {
+  background:var(--bg2); border:1px solid var(--border2);
+  border-radius:20px; width:90%; max-width:720px;
+  max-height:88vh; overflow-y:auto; padding:2rem;
+  position:relative; animation:fadeUp .3s ease;
+  box-shadow:0 32px 80px rgba(0,0,0,.6);
+}
+.modal-x {
+  position:absolute; top:1.2rem; right:1.2rem;
+  background:var(--bg3); border:1px solid var(--border); border-radius:99px;
+  color:var(--muted); font-size:.9rem; cursor:pointer;
+  width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  transition:all .2s;
+}
+.modal-x:hover { color:var(--white); border-color:var(--border2); }
+
+/* ── LOADING ───────────────────────────────────────────────────── */
+.loading {
+  display:flex; align-items:center; justify-content:center;
+  gap:12px; padding:3rem; color:var(--muted); font-size:.88rem;
+}
+.spin {
+  width:22px; height:22px; border:2px solid var(--border2);
+  border-top-color:var(--accent); border-radius:50%;
+  animation:rot .7s linear infinite;
+}
+@keyframes rot { to { transform:rotate(360deg); } }
+
+/* ── PLACEHOLDER ───────────────────────────────────────────────── */
+.placeholder {
+  background:var(--card); border:1px dashed var(--border2);
+  border-radius:var(--r); padding:3rem;
+  text-align:center; color:var(--muted);
+}
+.ph-icon { font-size:2.8rem; margin-bottom:.8rem; }
+.ph-text { font-size:.88rem; }
+.ph-text strong { color:var(--text); }
+
+/* ── TOAST ─────────────────────────────────────────────────────── */
+.toast {
+  position:fixed; bottom:1.5rem; right:1.5rem; z-index:999;
+  background:var(--bg2); border:1px solid var(--border2);
+  border-radius:var(--r2); padding:12px 18px;
+  font-size:.84rem; color:var(--text);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  transform:translateY(80px); opacity:0; transition:all .3s;
+}
+.toast.show { transform:translateY(0); opacity:1; }
+
+/* ── HAVE/MISS SKILL TAGS ──────────────────────────────────────── */
+.skill-chip {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 11px; border-radius:99px; font-size:.76rem; font-weight:600;
+}
+.chip-have { background:rgba(23,217,120,.12); color:#4ade80; border:1px solid rgba(23,217,120,.2); }
+.chip-miss { background:rgba(255,77,106,.1);  color:#f87171; border:1px solid rgba(255,77,106,.2); }
+
+/* ── MARKET TABLE ──────────────────────────────────────────────── */
+.mkt-table { width:100%; border-collapse:collapse; font-size:.82rem; }
+.mkt-table th {
+  padding:10px 12px; text-align:left; color:var(--muted);
+  font-weight:600; border-bottom:1px solid var(--border);
+  font-size:.75rem; text-transform:uppercase; letter-spacing:.04em;
+}
+.mkt-table td { padding:10px 12px; border-bottom:1px solid rgba(28,37,64,.5); vertical-align:middle; }
+.mkt-table tr:last-child td { border-bottom:none; }
+.mkt-table tr:hover td { background:rgba(255,255,255,.015); }
+
+/* ── FILTER BAR ────────────────────────────────────────────────── */
+.filter-bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1.5rem; align-items:center; }
+.filter-bar select { width:auto; padding:8px 12px; font-size:.82rem; }
+.filter-bar input  { width:240px; padding:8px 12px; font-size:.82rem; }
+
+/* ── empty state ───────────────────────────────────────────────── */
+.empty { text-align:center; padding:3rem; color:var(--muted); }
+.empty-icon { font-size:2.4rem; margin-bottom:.8rem; }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-mark">🧠</div>
+    TriIntel
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="go('home')">Home</button>
+    <button class="nav-btn" onclick="go('explore')">Explore</button>
+    <button class="nav-btn" onclick="go('recommend')">Get Roadmap</button>
+    <button class="nav-btn" onclick="go('analyze')">Role Fit</button>
+    <button class="nav-btn" onclick="go('market')">Market</button>
+  </div>
+</nav>
+
+<!-- ══════════════════ HOME ══════════════════ -->
+<div class="page active" id="page-home">
+<div class="page-inner">
+
+  <div class="hero">
+    <div class="hero-eyebrow">⚡ Powered by 3 ML Models &nbsp;·&nbsp; 50K Records</div>
+    <h1>Navigate Your Career<br>with <span>AI Intelligence</span></h1>
+    <p>Discover in-demand roles, identify your skill gaps, and get a step-by-step learning roadmap — driven by real 2025–2026 job market data.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary" onclick="go('recommend')">🚀 Get My Roadmap</button>
+      <button class="btn btn-outline" onclick="go('explore')">🔍 Explore Roles</button>
+      <button class="btn btn-violet" onclick="go('market')">📈 Market Trends</button>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val" id="s-roles">27</div><div class="stat-lbl">Roles Tracked</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-skills">192</div><div class="stat-lbl">Skills in Database</div></div>
+    <div class="stat-card"><div class="stat-val">50K</div><div class="stat-lbl">Training Records</div></div>
+    <div class="stat-card"><div class="stat-val">3</div><div class="stat-lbl">ML Models</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">🔥 Top Roles by Demand <span class="badge b-blue" style="font-size:.7rem">Live</span></div>
+      <div id="home-trending"><div class="loading"><div class="spin"></div>Loading…</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Most In-Demand Skills</div>
+      <div id="home-skills"><div class="loading"><div class="spin"></div>Loading…</div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════ EXPLORE ══════════════════ -->
+<div class="page" id="page-explore">
+<div class="page-inner">
+
+  <div class="sec-header">
+    <div class="sec-title">🔍 Explore All Roles</div>
+    <div class="sec-sub">Click any card to see full details, required skills, salary & roadmap</div>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" id="f-search" placeholder="🔍  Search roles…" oninput="filterRoles()" style="width:220px"/>
+    <select id="f-domain" onchange="filterRoles()">
+      <option value="">All Domains</option>
+    </select>
+    <select id="f-risk" onchange="filterRoles()">
+      <option value="">All AI Risk</option>
+      <option>Very Low</option><option>Low</option><option>Moderate</option>
+      <option>High</option><option>Very High</option>
+    </select>
+    <select id="f-trend" onchange="filterRoles()">
+      <option value="">All Trends</option>
+      <option>Surging</option><option>Growing</option>
+      <option>Stable</option><option>Slow Growth</option><option>Declining</option>
+    </select>
+  </div>
+
+  <div class="g3" id="roles-grid"></div>
+
+</div>
+</div>
+
+<!-- ══════════════════ RECOMMEND ══════════════════ -->
+<div class="page" id="page-recommend">
+<div class="page-inner">
+
+  <div class="sec-header">
+    <div class="sec-title">🤖 Get Your Personalised Roadmap</div>
+    <div class="sec-sub">Our ML model analyses your profile and recommends the best roles + a learning plan</div>
+  </div>
+
+  <div class="g2" style="align-items:start">
+
+    <!-- FORM -->
+    <div class="card">
+      <div class="card-title">Your Profile</div>
+
+      <div class="row2">
+        <div class="form-group">
+          <label class="form-label">Years of Experience</label>
+          <input type="number" id="r-yoe" min="0" max="30" step="0.5" value="1" placeholder="e.g. 2"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Education Level</label>
+          <select id="r-edu">
+            <option>High School</option><option>Associate's</option>
+            <option selected>Bachelor's</option><option>Master's</option>
+            <option>PhD</option><option>Bootcamp</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Interest Domain</label>
+        <select id="r-domain">
+          <option value="">Not sure yet</option>
+          <option>AI & ML</option><option>Data & Analytics</option>
+          <option>Software Development</option><option>Cybersecurity</option>
+          <option>Infrastructure & Cloud</option><option>Business & Management</option>
+          <option>Design</option><option>Emerging Tech</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Target Role <span style="font-weight:400;text-transform:none;font-size:.72rem">(optional)</span></label>
+        <select id="r-target">
+          <option value="">Let the model decide</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Your Skills</label>
+        <div class="row2" style="margin-bottom:8px">
+          <div class="skill-wrap">
+            <input type="text" id="r-sk-inp" placeholder="Search skill…"
+              oninput="filterDrop('r')" onfocus="openDrop('r')" autocomplete="off"/>
+            <div class="skill-drop" id="r-sk-drop"></div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <select id="r-sk-lv" style="flex:1">
+              <option>Beginner</option><option selected>Intermediate</option><option>Advanced</option>
+            </select>
+            <button class="btn btn-sm btn-outline" onclick="addSkill('r')">Add</button>
+          </div>
+        </div>
+        <div class="skill-tags" id="r-sk-tags"></div>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.5rem" onclick="doRecommend(event)">
+        🔮 Generate My Roadmap
+      </button>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="rec-out">
+      <div class="placeholder">
+        <div class="ph-icon">🎯</div>
+        <div class="ph-text">Fill in your profile and click<br><strong>Generate My Roadmap</strong></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════ ANALYZE ══════════════════ -->
+<div class="page" id="page-analyze">
+<div class="page-inner">
+
+  <div class="sec-header">
+    <div class="sec-title">📊 Role Fit Analyser</div>
+    <div class="sec-sub">Pick a target role, add your skills, and see your exact readiness score</div>
+  </div>
+
+  <div class="g2" style="align-items:start">
+
+    <div class="card">
+      <div class="card-title">Analyse My Fit</div>
+
+      <div class="form-group">
+        <label class="form-label">Target Role</label>
+        <select id="a-target"></select>
+      </div>
+
+      <div class="row2">
+        <div class="form-group">
+          <label class="form-label">Experience (years)</label>
+          <input type="number" id="a-yoe" min="0" max="30" step="0.5" value="1"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Education</label>
+          <select id="a-edu">
+            <option>High School</option><option>Associate's</option>
+            <option selected>Bachelor's</option><option>Master's</option>
+            <option>PhD</option><option>Bootcamp</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Your Skills</label>
+        <div class="row2" style="margin-bottom:8px">
+          <div class="skill-wrap">
+            <input type="text" id="a-sk-inp" placeholder="Search skill…"
+              oninput="filterDrop('a')" onfocus="openDrop('a')" autocomplete="off"/>
+            <div class="skill-drop" id="a-sk-drop"></div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <select id="a-sk-lv" style="flex:1">
+              <option>Beginner</option><option selected>Intermediate</option><option>Advanced</option>
+            </select>
+            <button class="btn btn-sm btn-outline" onclick="addSkill('a')">Add</button>
+          </div>
+        </div>
+        <div class="skill-tags" id="a-sk-tags"></div>
+      </div>
+
+      <button class="btn btn-violet" style="width:100%;justify-content:center;margin-top:.5rem" onclick="doAnalyze(event)">
+        📊 Analyse My Fit
+      </button>
+    </div>
+
+    <div id="analyze-out">
+      <div class="placeholder">
+        <div class="ph-icon">📋</div>
+        <div class="ph-text">Select a role and add your skills<br><strong>to see your readiness score</strong></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════ MARKET ══════════════════ -->
+<div class="page" id="page-market">
+<div class="page-inner">
+
+  <div class="sec-header">
+    <div class="sec-title">📈 Market Trends</div>
+    <div class="sec-sub">Real 2025–2026 job market intelligence across all tracked roles</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="mktTab('demand',this)">Demand Score</button>
+    <button class="tab-btn" onclick="mktTab('growth',this)">Growth %</button>
+    <button class="tab-btn" onclick="mktTab('salary',this)">Avg Salary</button>
+  </div>
+
+  <div class="card" style="margin-bottom:1.5rem">
+    <canvas id="mkt-chart" height="320"></canvas>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">🚀 Emerging Roles <span class="badge b-violet">New & Surging</span></div>
+      <div id="emerging-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚠️ At-Risk Roles <span class="badge b-red">AI Threat</span></div>
+      <div id="atrisk-list"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.5rem">
+    <div class="card-title">📋 All Roles — Full Market Table</div>
+    <div style="overflow-x:auto">
+      <table class="mkt-table" id="mkt-table"></table>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ROLE MODAL -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <button class="modal-x" onclick="closeModal()">✕</button>
+    <div id="modal-body"><div class="loading"><div class="spin"></div>Loading…</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════ SCRIPT ══════════════════ -->
+<script>
+const API = 'http://localhost:8000';
+
+// ── STATE ──────────────────────────────────────────────────────────
+let allRoles = [], allSkills = [], dashData = {};
+let userSkills = { r:[], a:[] };
+let mktChart = null, curMktTab = 'demand';
+
+// ── BOOT ───────────────────────────────────────────────────────────
+async function boot(){
+  try {
+    const [dash, rolesRes, skillsRes] = await Promise.all([
+      fetch(`${API}/dashboard`).then(r=>r.json()),
+      fetch(`${API}/roles`).then(r=>r.json()),
+      fetch(`${API}/skills`).then(r=>r.json()),
+    ]);
+    dashData  = dash;
+    allRoles  = rolesRes.roles;
+    allSkills = skillsRes.skills;
+
+    document.getElementById('s-roles').textContent  = dash.total_roles;
+    document.getElementById('s-skills').textContent = dash.total_skills;
+
+    renderHomeTrending(dash.trending_roles.slice(0,8));
+    renderHomeSkills(dash.top_skills.slice(0,12));
+    renderRolesGrid(allRoles);
+    populateDomainFilter();
+    populateRoleSelects();
+    renderSkillDropContent('r','');
+    renderSkillDropContent('a','');
+    renderMarketChart('demand');
+    renderMarketLists();
+    renderMarketTable();
+  } catch(e){
+    toast('⚠️ Backend offline. Start the FastAPI server: uvicorn main:app --reload');
+  }
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────────────
+function go(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const labels = {home:'Home',explore:'Explore',recommend:'Roadmap',analyze:'Fit',market:'Market'};
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    if(b.textContent.trim().toLowerCase().includes((labels[name]||name).toLowerCase()))
+      b.classList.add('active');
+  });
+  if(name==='market') setTimeout(()=>renderMarketChart(curMktTab),50);
+}
+
+// ── HOME ───────────────────────────────────────────────────────────
+function renderHomeTrending(roles){
+  document.getElementById('home-trending').innerHTML = roles.map(r=>`
+    <div class="tr-row" onclick="openModal('${esc(r.role)}')">
+      <div>
+        <div class="tr-name">${r.role}</div>
+        <div class="tr-domain">${r.domain}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="tr-score">${r.demand_score}</div>
+        <div class="tr-growth" style="color:${r.growth_pct>=0?'var(--green)':'var(--red)'}">
+          ${r.growth_pct>=0?'↑':'↓'} ${Math.abs(r.growth_pct)}%
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderHomeSkills(skills){
+  const max = skills[0]?.count || 1;
+  document.getElementById('home-skills').innerHTML = skills.map((s,i)=>`
+    <div class="skill-bar-row">
+      <div class="sbr-head">
+        <span class="sn">${s.skill}</span>
+        <span class="sc">${s.count.toLocaleString()}</span>
+      </div>
+      <div class="progress">
+        <div class="progress-fill" style="width:${Math.round(s.count/max*100)}%;background:${
+          i<3?'var(--accent)':i<6?'var(--violet)':'var(--muted)'}"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── EXPLORE ────────────────────────────────────────────────────────
+function renderRolesGrid(roles){
+  const el = document.getElementById('roles-grid');
+  if(!roles.length){ el.innerHTML='<div class="empty"><div class="empty-icon">🔍</div>No roles match</div>'; return; }
+  el.innerHTML = roles.map(r=>`
+    <div class="role-card ${r.is_emerging?'emerging':''} ${r.is_at_risk?'atrisk':''}" onclick="openModal('${esc(r.name)}')">
+      <div class="role-meta">
+        ${r.is_emerging?'<span class="badge b-violet">🚀 Emerging</span>':''}
+        ${r.is_at_risk?'<span class="badge b-red">⚠️ At Risk</span>':''}
+        <span class="badge b-gray">${r.domain}</span>
+      </div>
+      <h3>${r.name}</h3>
+      <div class="demand-row"><span>Demand</span><span>${r.demand_score}/100</span></div>
+      <div class="progress">
+        <div class="progress-fill" style="width:${r.demand_score}%;background:${demandColor(r.demand_score)}"></div>
+      </div>
+      <div class="role-footer">
+        <span style="color:${r.growth_pct>=0?'var(--green)':'var(--red)'}">
+          ${r.growth_pct>=0?'↑':'↓'} ${Math.abs(r.growth_pct)}%
+        </span>
+        <span class="salary-tag">$${(r.avg_salary_usd/1000).toFixed(0)}K</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterRoles(){
+  const q   = document.getElementById('f-search').value.toLowerCase();
+  const dom = document.getElementById('f-domain').value;
+  const risk= document.getElementById('f-risk').value;
+  const trend=document.getElementById('f-trend').value;
+  renderRolesGrid(allRoles.filter(r=>
+    (!q    || r.name.toLowerCase().includes(q) || r.domain.toLowerCase().includes(q)) &&
+    (!dom  || r.domain===dom) &&
+    (!risk || r.ai_replacement_risk===risk) &&
+    (!trend|| r.market_trend===trend)
+  ));
+}
+
+function populateDomainFilter(){
+  const doms = [...new Set(allRoles.map(r=>r.domain))].sort();
+  document.getElementById('f-domain').innerHTML =
+    '<option value="">All Domains</option>' + doms.map(d=>`<option>${d}</option>`).join('');
+}
+
+function populateRoleSelects(){
+  ['r-target','a-target'].forEach(id=>{
+    const el = document.getElementById(id);
+    const prefix = id==='r-target'?'<option value="">Let the model decide</option>':'';
+    el.innerHTML = prefix + allRoles.map(r=>`<option>${r.name}</option>`).join('');
+  });
+}
+
+// ── MODAL ──────────────────────────────────────────────────────────
+async function openModal(roleName){
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modal-body').innerHTML = '<div class="loading"><div class="spin"></div>Loading…</div>';
+  try {
+    const d = await fetch(`${API}/roles/${encodeURIComponent(roleName)}`).then(r=>r.json());
+    renderModal(d);
+  } catch(e){
+    document.getElementById('modal-body').innerHTML = '<div class="empty">Could not load role details.</div>';
+  }
+}
+
+function renderModal(d){
+  const {role, info, skills, roadmap, predicted_demand} = d;
+  const riskClr = {'Very Low':'var(--green)','Low':'#86efac','Moderate':'var(--amber)','High':'var(--red)','Very High':'#dc2626'}[info.ai_replacement_risk]||'var(--muted)';
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+      <div>
+        <div style="font-family:var(--font-head);font-size:1.5rem;font-weight:800;color:var(--white)">${role}</div>
+        <div style="color:var(--muted);font-size:.83rem;margin-top:4px">${info.domain} &nbsp;·&nbsp; ${info.education_required} typically required</div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+          ${info.is_emerging?'<span class="badge b-violet">🚀 Emerging</span>':''}
+          ${info.is_at_risk?'<span class="badge b-red">⚠️ At Risk</span>':''}
+          <span class="badge b-gray">${info.market_trend}</span>
+          <span class="badge b-blue">${info.future_demand} Demand</span>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--accent2)">$${(info.avg_salary_usd/1000).toFixed(0)}K</div>
+        <div style="font-size:.73rem;color:var(--muted)">avg US salary</div>
+      </div>
+    </div>
+
+    <div class="g4" style="margin-bottom:1.5rem">
+      ${statBox('Demand Score', info.demand_score+'/100', 'var(--accent2)')}
+      ${statBox('Job Growth', (info.growth_pct>=0?'+':'')+info.growth_pct+'%', info.growth_pct>=0?'var(--green)':'var(--red)')}
+      ${statBox('AI Risk', info.ai_replacement_risk, riskClr)}
+      ${statBox('ML Prediction', Math.round(predicted_demand||info.demand_score), 'var(--cyan)')}
+    </div>
+
+    <div style="margin-bottom:1.2rem">
+      <div style="font-family:var(--font-head);font-weight:700;color:var(--white);margin-bottom:8px;font-size:.9rem">Core Skills Required</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        ${skills.core.map(s=>`<span class="badge b-blue">${s}</span>`).join('')}
+      </div>
+    </div>
+    <div style="margin-bottom:1.5rem">
+      <div style="font-family:var(--font-head);font-weight:700;color:var(--white);margin-bottom:8px;font-size:.9rem">Good-to-Have Skills</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        ${skills.secondary.map(s=>`<span class="badge b-gray">${s}</span>`).join('')}
+      </div>
+    </div>
+
+    <div style="font-family:var(--font-head);font-weight:700;color:var(--white);margin-bottom:12px;font-size:.9rem">📚 Learning Roadmap</div>
+    ${roadmap.map(step=>`
+      <div class="roadmap-step">
+        <div class="step-num">${step.step}</div>
+        <div class="step-body">
+          <div class="sk-name">${step.skill}</div>
+          <div class="sk-link"><a href="${step.resource}" target="_blank" rel="noopener">${step.resource}</a></div>
+        </div>
+      </div>
+    `).join('')}
+
+    <div style="display:flex;gap:8px;margin-top:1.5rem;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" onclick="closeModal();go('analyze');setTimeout(()=>document.getElementById('a-target').value='${esc(role)}',100)">
+        📊 Check My Fit for This Role
+      </button>
+      <button class="btn btn-outline btn-sm" onclick="closeModal()">Close</button>
+    </div>
+  `;
+}
+
+function statBox(label, value, color){
+  return `<div style="background:var(--bg3);border-radius:var(--r2);padding:.9rem;text-align:center;border:1px solid var(--border)">
+    <div style="font-family:var(--font-head);font-size:1.1rem;font-weight:800;color:${color}">${value}</div>
+    <div style="font-size:.72rem;color:var(--muted);margin-top:3px">${label}</div>
+  </div>`;
+}
+
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeModal(); });
+
+// ── SKILL PICKER ────────────────────────────────────────────────────
+function renderSkillDropContent(p, q){
+  const added = userSkills[p].map(s=>s.skill);
+  const filtered = allSkills.filter(s=>s.toLowerCase().includes(q.toLowerCase())).slice(0,30);
+  const el = document.getElementById(`${p}-sk-drop`);
+  if(!filtered.length){ el.innerHTML='<div class="sk-opt" style="color:var(--muted)">No skills found</div>'; return; }
+  el.innerHTML = filtered.map(s=>`
+    <div class="sk-opt ${added.includes(s)?'added':''}" onclick="pickSkill('${p}','${esc(s)}')">
+      <span>${s}</span>
+      ${added.includes(s)?'<span style="color:var(--green);font-size:.72rem">✓</span>':''}
+    </div>
+  `).join('');
+}
+
+function filterDrop(p){
+  const q = document.getElementById(`${p}-sk-inp`).value;
+  renderSkillDropContent(p, q);
+  document.getElementById(`${p}-sk-drop`).classList.add('open');
+}
+
+function openDrop(p){
+  renderSkillDropContent(p, document.getElementById(`${p}-sk-inp`).value);
+  document.getElementById(`${p}-sk-drop`).classList.add('open');
+}
+
+function pickSkill(p, s){
+  document.getElementById(`${p}-sk-inp`).value = s;
+  document.getElementById(`${p}-sk-drop`).classList.remove('open');
+}
+
+function addSkill(p){
+  const inp = document.getElementById(`${p}-sk-inp`);
+  const lv  = document.getElementById(`${p}-sk-lv`);
+  const sk  = inp.value.trim();
+  if(!sk){ toast('Type or select a skill first'); return; }
+  if(userSkills[p].find(s=>s.skill===sk)){ toast('Already added'); return; }
+  userSkills[p].push({ skill:sk, level:lv.value });
+  inp.value = '';
+  renderTags(p);
+  document.getElementById(`${p}-sk-drop`).classList.remove('open');
+}
+
+function removeSkill(p, sk){
+  userSkills[p] = userSkills[p].filter(s=>s.skill!==sk);
+  renderTags(p);
+}
+
+function renderTags(p){
+  document.getElementById(`${p}-sk-tags`).innerHTML = userSkills[p].map(s=>`
+    <span class="sk-tag">
+      ${s.skill}
+      <span class="sk-lv lv-${s.level}">${s.level[0]}</span>
+      <button class="sk-rm" onclick="removeSkill('${p}','${esc(s.skill)}')">×</button>
+    </span>
+  `).join('');
+}
+
+// close dropdown on outside click
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.skill-wrap'))
+    document.querySelectorAll('.skill-drop').forEach(d=>d.classList.remove('open'));
+});
+
+// ── RECOMMEND ──────────────────────────────────────────────────────
+async function doRecommend(e){
+  const btn = e.target; btn.disabled=true; btn.textContent='⏳ Analysing…';
+  try {
+    const res = await fetch(`${API}/recommend`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        years_of_experience: parseFloat(document.getElementById('r-yoe').value)||0,
+        education_level:     document.getElementById('r-edu').value,
+        interest_domain:     document.getElementById('r-domain').value,
+        target_role:         document.getElementById('r-target').value,
+        user_skills:         userSkills.r,
+      })
+    }).then(r=>r.json());
+    renderRecResults(res);
+  } catch(err){ toast('⚠️ Backend not reachable — run: uvicorn main:app --reload'); }
+  finally { btn.disabled=false; btn.textContent='🔮 Generate My Roadmap'; }
+}
+
+function renderRecResults(d){
+  const trendClr = {Surging:'var(--green)',Growing:'#86efac',Stable:'var(--amber)','Slow Growth':'#f97316',Declining:'var(--red)'};
+  document.getElementById('rec-out').innerHTML = `
+
+    <!-- Readiness ring -->
+    <div class="result-section" style="text-align:center">
+      ${ring(d.readiness_score)}
+      <div style="font-family:var(--font-head);font-weight:700;color:var(--white);margin-bottom:6px">Market Readiness</div>
+      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+        <span class="badge b-blue">${d.user_skill_count} skills</span>
+        <span class="badge b-gray">${d.years_of_experience} yrs exp</span>
+        <span class="badge" style="background:rgba(0,0,0,.2);color:${trendClr[d.market_trend]||'var(--text)'}">${d.market_trend||'—'} market</span>
+      </div>
+    </div>
+
+    <!-- Top roles -->
+    <div class="result-section">
+      <div class="rs-title">🎯 Recommended Roles</div>
+      ${d.recommended_roles.map(r=>`
+        <div class="rec-role-row">
+          <div class="rrr-left">
+            <div class="name">${r.role}</div>
+            <div class="meta">${r.domain} &nbsp;·&nbsp; $${(r.avg_salary_usd/1000).toFixed(0)}K &nbsp;·&nbsp; ${r.ai_replacement_risk} AI risk</div>
+          </div>
+          <div>
+            <div class="match-pct">${r.match_pct}%</div>
+            <div class="match-lbl">match</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Missing skills -->
+    ${d.missing_skills.length ? `
+    <div class="result-section">
+      <div class="rs-title">⚡ Skills to Learn <span class="badge b-amber" style="font-size:.72rem">${d.skill_gap_count} gaps</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${d.missing_skills.map(s=>`
+          <a href="${s.resource}" target="_blank" rel="noopener" style="text-decoration:none">
+            <span class="badge b-amber" style="cursor:pointer">📚 ${s.skill}</span>
+          </a>
+        `).join('')}
+      </div>
+    </div>` : ''}
+
+    <!-- Roadmap -->
+    ${d.learning_roadmap.length ? `
+    <div class="result-section">
+      <div class="rs-title">🗺️ Learning Roadmap</div>
+      ${d.learning_roadmap.map(step=>`
+        <div class="roadmap-step">
+          <div class="step-num">${step.step}</div>
+          <div class="step-body">
+            <div class="sk-name">${step.skill} <span class="badge b-gray" style="font-size:.68rem">${step.level_to_reach}</span></div>
+            <div class="sk-link"><a href="${step.resource}" target="_blank" rel="noopener">${step.resource}</a></div>
+          </div>
+        </div>
+      `).join('')}
+    </div>` : ''}
+  `;
+}
+
+// ── ANALYZE ────────────────────────────────────────────────────────
+async function doAnalyze(e){
+  const btn = e.target; btn.disabled=true; btn.textContent='⏳ Analysing…';
+  try {
+    const res = await fetch(`${API}/analyze-role`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        years_of_experience: parseFloat(document.getElementById('a-yoe').value)||0,
+        education_level:     document.getElementById('a-edu').value,
+        target_role:         document.getElementById('a-target').value,
+        user_skills:         userSkills.a,
+      })
+    }).then(r=>r.json());
+    renderAnalyzeResults(res);
+  } catch(err){ toast('⚠️ Backend not reachable — run: uvicorn main:app --reload'); }
+  finally { btn.disabled=false; btn.textContent='📊 Analyse My Fit'; }
+}
+
+function renderAnalyzeResults(d){
+  const total = d.have_core_skills.length + d.miss_core_skills.length;
+  document.getElementById('analyze-out').innerHTML = `
+
+    <div class="result-section" style="text-align:center">
+      ${ring(d.readiness_score)}
+      <div style="font-family:var(--font-head);font-weight:800;font-size:1rem;color:var(--white)">${d.target_role}</div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:4px">Readiness Score</div>
+      <div style="margin-top:8px">
+        <span class="badge b-blue">${d.have_core_skills.length}/${total} core skills</span>
+      </div>
+    </div>
+
+    <div class="result-section">
+      <div class="rs-title">✅ Skills You Have</div>
+      ${d.have_core_skills.length ?
+        `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:${d.have_secondary.length?'10px':'0'}">
+          ${d.have_core_skills.map(s=>`<span class="skill-chip chip-have">✓ ${s}</span>`).join('')}
+        </div>
+        ${d.have_secondary.length?`<div style="display:flex;flex-wrap:wrap;gap:5px">
+          ${d.have_secondary.map(s=>`<span class="badge b-gray">+ ${s}</span>`).join('')}
+        </div>`:''}` :
+        '<div style="color:var(--muted);font-size:.84rem">No matching skills yet — that\'s okay, everyone starts here!</div>'
+      }
+    </div>
+
+    ${d.miss_core_skills.length ? `
+    <div class="result-section">
+      <div class="rs-title">❌ Core Skills Missing <span class="badge b-red" style="font-size:.72rem">${d.miss_core_skills.length}</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        ${d.miss_core_skills.map(s=>`<span class="skill-chip chip-miss">✗ ${s}</span>`).join('')}
+      </div>
+    </div>` : ''}
+
+    ${d.roadmap.length ? `
+    <div class="result-section">
+      <div class="rs-title">🗺️ Your Personalised Roadmap</div>
+      ${d.roadmap.map(step=>`
+        <div class="roadmap-step">
+          <div class="step-num ${step.priority==='High'?'high':'med'}">${step.step}</div>
+          <div class="step-body">
+            <div class="sk-name">${step.skill}
+              <span class="badge ${step.priority==='High'?'b-red':'b-amber'}" style="font-size:.68rem">${step.priority} priority</span>
+            </div>
+            <div class="sk-link"><a href="${step.resource}" target="_blank" rel="noopener">${step.resource}</a></div>
+          </div>
+        </div>
+      `).join('')}
+    </div>` :
+    `<div class="result-section" style="text-align:center;color:var(--green)">
+      <div style="font-size:2rem;margin-bottom:.5rem">🎉</div>
+      <div style="font-weight:700">You are fully ready for this role!</div>
+    </div>`}
+  `;
+}
+
+// ── MARKET ─────────────────────────────────────────────────────────
+function mktTab(tab, btn){
+  curMktTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMarketChart(tab);
+}
+
+function renderMarketChart(tab){
+  if(!allRoles.length) return;
+  const sorted = [...allRoles].sort((a,b)=>{
+    if(tab==='demand') return b.demand_score-a.demand_score;
+    if(tab==='growth') return b.growth_pct-a.growth_pct;
+    return b.avg_salary_usd-a.avg_salary_usd;
+  }).slice(0,15);
+
+  const labels = sorted.map(r=>r.name.length>17?r.name.slice(0,15)+'…':r.name);
+  const vals   = sorted.map(r=>tab==='demand'?r.demand_score:tab==='growth'?r.growth_pct:Math.round(r.avg_salary_usd/1000));
+  const colors = sorted.map(r=>
+    r.growth_pct<0?'rgba(255,77,106,.65)':
+    r.is_emerging?'rgba(124,92,252,.75)':
+    'rgba(79,142,247,.7)'
+  );
+
+  const ctx = document.getElementById('mkt-chart');
+  if(mktChart) mktChart.destroy();
+  mktChart = new Chart(ctx, {
+    type:'bar',
+    data:{ labels, datasets:[{
+      label: tab==='demand'?'Demand Score':tab==='growth'?'Growth %':'Avg Salary ($K)',
+      data:vals, backgroundColor:colors, borderRadius:6, borderSkipped:false
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ ticks:{color:'#6b7fa3',font:{family:'DM Sans',size:11}}, grid:{color:'rgba(255,255,255,.04)'} },
+        y:{ ticks:{color:'#6b7fa3',font:{family:'DM Sans'}},          grid:{color:'rgba(255,255,255,.06)'} }
+      }
+    }
+  });
+}
+
+function renderMarketLists(){
+  const emerging = allRoles.filter(r=>r.is_emerging);
+  const atrisk   = allRoles.filter(r=>r.is_at_risk);
+
+  document.getElementById('emerging-list').innerHTML = emerging.map(r=>`
+    <div class="tr-row" onclick="openModal('${esc(r.name)}')">
+      <div>
+        <div class="tr-name">${r.name}</div>
+        <div class="tr-domain">${r.domain}</div>
+      </div>
+      <span class="badge b-green">↑ ${r.growth_pct}%</span>
+    </div>
+  `).join('');
+
+  document.getElementById('atrisk-list').innerHTML = atrisk.map(r=>`
+    <div class="tr-row" onclick="openModal('${esc(r.name)}')">
+      <div>
+        <div class="tr-name">${r.name}</div>
+        <div class="tr-domain">${r.ai_replacement_risk} AI Risk</div>
+      </div>
+      <span class="badge b-red">${r.market_trend}</span>
+    </div>
+  `).join('');
+}
+
+function renderMarketTable(){
+  document.getElementById('mkt-table').innerHTML = `
+    <thead>
+      <tr>
+        <th>Role</th><th>Domain</th><th>Demand</th>
+        <th>Growth</th><th>AI Risk</th><th>Trend</th><th>Avg Salary</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${[...allRoles].sort((a,b)=>b.demand_score-a.demand_score).map(r=>`
+        <tr style="cursor:pointer" onclick="openModal('${esc(r.name)}')">
+          <td style="font-weight:600;color:var(--white)">
+            ${r.is_emerging?'<span class="badge b-violet" style="margin-right:5px;font-size:.65rem">NEW</span>':''}
+            ${r.name}
+          </td>
+          <td style="color:var(--muted)">${r.domain}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div class="progress" style="width:60px"><div class="progress-fill" style="width:${r.demand_score}%;background:${demandColor(r.demand_score)}"></div></div>
+              <span style="font-weight:700;color:var(--white)">${r.demand_score}</span>
+            </div>
+          </td>
+          <td style="color:${r.growth_pct>=0?'var(--green)':'var(--red)'}">
+            ${r.growth_pct>=0?'↑':'↓'} ${Math.abs(r.growth_pct)}%
+          </td>
+          <td><span class="badge ${riskBadge(r.ai_replacement_risk)}">${r.ai_replacement_risk}</span></td>
+          <td><span class="badge ${trendBadge(r.market_trend)}">${r.market_trend}</span></td>
+          <td style="font-weight:700;color:var(--accent2)">$${(r.avg_salary_usd/1000).toFixed(0)}K</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+// ── UTILS ──────────────────────────────────────────────────────────
+function ring(score){
+  const r=48, c=2*Math.PI*r;
+  const fill = Math.round((score/100)*c);
+  const color = score>=75?'var(--green)':score>=50?'var(--amber)':'var(--red)';
+  return `<div class="ring-wrap">
+    <svg width="110" height="110" viewBox="0 0 110 110">
+      <circle cx="55" cy="55" r="${r}" fill="none" stroke="var(--border2)" stroke-width="9"/>
+      <circle cx="55" cy="55" r="${r}" fill="none" stroke="${color}" stroke-width="9"
+        stroke-dasharray="${fill} ${Math.round(c-fill)}" stroke-linecap="round"/>
+    </svg>
+    <div class="ring-text">
+      <div class="ring-num">${score}</div>
+      <div class="ring-lbl">/ 100</div>
+    </div>
+  </div>`;
+}
+
+function demandColor(s){ return s>=90?'var(--green)':s>=75?'var(--accent)':s>=60?'var(--amber)':'var(--red)'; }
+
+function riskBadge(r){ return {'Very Low':'b-green','Low':'b-green','Moderate':'b-amber','High':'b-red','Very High':'b-red'}[r]||'b-gray'; }
+function trendBadge(t){ return {Surging:'b-green',Growing:'b-cyan',Stable:'b-amber','Slow Growth':'b-amber',Declining:'b-red'}[t]||'b-gray'; }
+
+function esc(s){ return String(s).replace(/'/g,"\\'"); }
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 4000);
+}
+
+// ── START ──────────────────────────────────────────────────────────
+boot();
+</script>
+</body>
+</html>
