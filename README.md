@@ -134,6 +134,21 @@ The `notebooks/` directory contains the full ML development pipeline:
 4. **Roadmap Generator** — sequence modelling for learning path output
 
 ---
+## Results
+
+| Model | Metric | Score |
+|---|---|---|
+| Role Recommender | Accuracy | 99.7% |
+| Skill Gap Classifier | F1 Score (Micro) | 0.905 |
+| Skill Gap Classifier | F1 Score (Macro) | 0.907 |
+| Demand Score Predictor | R² | 1.00 |
+| Demand Score Predictor | RMSE | 0.000 |
+
+> **Note:** Dataset is synthetically generated (50,000 records, 27 roles, 40 skills),
+> which accounts for the near-perfect scores. Performance on real-world data
+> would be expected in the 80–90% range.
+
+---
 
 ## License
 
